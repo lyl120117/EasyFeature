@@ -1,0 +1,5 @@
+pyyaml
+opencv-python
+tqdm
+visualdl
+protobuf==3.19.0
