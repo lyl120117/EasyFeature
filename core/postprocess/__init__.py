@@ -16,10 +16,11 @@ import copy
 __all__ = ['build_post_process']
 
 from .cls_postprocess import ClsPostProcess
+from .feature_postprocess import FeaturePostProcess
 
 
 def build_post_process(config, global_config=None):
-    support_dict = ['ClsPostProcess']
+    support_dict = ['ClsPostProcess', 'FeaturePostProcess']
 
     config = copy.deepcopy(config)
     module_name = config.pop('name')

@@ -17,10 +17,11 @@ import copy
 __all__ = ["build_metric"]
 
 from .cls_metric import ClsMetric
+from .feature_metric import FeatureMetric
 
 
 def build_metric(config):
-    support_dict = ["ClsMetric"]
+    support_dict = ['ClsMetric', 'FeatureMetric']
 
     config = copy.deepcopy(config)
     module_name = config.pop("name")

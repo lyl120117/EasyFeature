@@ -18,7 +18,8 @@ def build_dataloader(config, mode, logger):
         "Eval",
         "Test",
         "Template",
-    ], "Mode should be Train, Eval, Test or Template."
+        "TestTemplate",
+    ], "Mode should be Train, Eval, Test, Template or TestTemplate."
 
     dataset = eval(module_name)(config, mode, logger)
 

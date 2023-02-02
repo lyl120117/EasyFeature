@@ -12,6 +12,8 @@ Global:
   pretrained_model:
   use_visualdl: True
   dict_path: ./datasets/MNIST/dicts.txt
+  infer_feature: True
+  template_mode: 0 # 0: template, 1: FC, 2: FC + template
 
 
 Architecture:
@@ -55,6 +57,13 @@ PostProcess:
 
 Metric:
   name: ClsMetric
+  main_indicator: acc
+
+PostFeatureProcess:
+  name: FeaturePostProcess
+
+FeatureMetric:
+  name: FeatureMetric
   main_indicator: acc
 
 Train:
@@ -112,5 +121,43 @@ Test:
   loader:
     shuffle: False
     batch_size_per_card: 256
+    drop_last: False
+    num_workers: 1
+    
+TestTemplate:
+  dataset:
+    name: SimpleDataset
+    data_root: ./datasets/MNIST
+    data_names: ['test_images_split.npy', 'test_labels_split.npy']
+    transforms:
+      - ClsResize:
+          size: [28, 28]
+      - ToCHWImage:
+      - Normalize:
+          mean: [0.1307]
+          std: [0.3081]
+      - ToTensor:
+  loader:
+    shuffle: False
+    batch_size_per_card: 256
+    drop_last: False
+    num_workers: 1
+    
+Template:
+  dataset:
+    name: SimpleDataset
+    data_root: ./datasets/MNIST
+    data_names: ['template_images.npy', 'template_labels.npy']
+    transforms:
+      - ClsResize:
+          size: [28, 28]
+      - ToCHWImage:
+      - Normalize:
+          mean: [0.1307]
+          std: [0.3081]
+      - ToTensor:
+  loader:
+    shuffle: False
+    batch_size_per_card: 4
     drop_last: False
     num_workers: 1

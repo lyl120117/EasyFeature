@@ -12,6 +12,9 @@ class ClsHead(nn.Module):
         self.fc = nn.Linear(in_channels, class_num)
         self.out_channels = class_num
 
+    def get_weights(self):
+        return self.fc.weight
+
     def forward(self, x, targets=None):
         logits = self.fc(x)
         if not self.training:
