@@ -56,6 +56,11 @@ class BaseModel(nn.Module):
 
         self.return_all_feats = config.get("return_all_feats", False)
 
+    def to(self, device):
+        self = super(BaseModel, self).to(device)
+        self.head.to(device)
+        return self
+
     def forward(self, x, data=None):
         y = dict()
 

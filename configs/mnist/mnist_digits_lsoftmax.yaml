@@ -6,7 +6,7 @@ Global:
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [0, 100]
   save_epoch_step: 1
-  save_model_dir: ./output/mnist/mnist_digits/
+  save_model_dir: ./output/mnist/mnist_digits_lsoftmax/
   cal_metric_during_train: True
   checkpoints: 
   pretrained_model:
@@ -25,8 +25,12 @@ Architecture:
     input_size: 28
     out_channels: 256
   Head:
-    name: ClsHead
+    name: LSoftmaxHead
     class_num: 10
+    margin: 1
+    base: 1000
+    gamma: 0.000025
+    power: 45
 
 Loss:
   name: ClsLoss
@@ -49,6 +53,7 @@ Optimizer:
 
 Scheduler:
   name: MultiStep
+  # milestones: [68, 85]
   milestones: [40, 60]
   gamma: 0.1
 

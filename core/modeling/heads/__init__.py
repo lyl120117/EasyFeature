@@ -13,12 +13,13 @@
 # limitations under the License.
 
 from .cls_head import ClsHead
+from .lsoftmax_head import LSoftmaxHead
 
 __all__ = ['build_head']
 
 
 def build_head(config):
-    support_dict = ['ClsHead']
+    support_dict = ['ClsHead', 'LSoftmaxHead']
 
     module_name = config.pop('name')
     assert module_name in support_dict, Exception(
