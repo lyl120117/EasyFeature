@@ -6,12 +6,12 @@ Global:
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [0, 100]
   save_epoch_step: 1
-  save_model_dir: ./output/mnist/mnist_digits_lsoftmax/
+  save_model_dir: ./output/cifar100/cifar100_lsoftmax/
   cal_metric_during_train: True
   checkpoints: 
   pretrained_model:
   use_visualdl: True
-  dict_path: ./datasets/MNIST/dicts.txt
+  dict_path: ./datasets/CIFAR100/dicts.txt
   infer_feature: True
   template_mode: 0 # 0: template, 1: FC, 2: FC + template
 
@@ -26,7 +26,7 @@ Architecture:
     out_channels: 5
   Head:
     name: LSoftmaxHead
-    class_num: 10
+    class_num: 100
     margin: 1
     base: 1000
     gamma: 0.000025
@@ -74,7 +74,7 @@ FeatureMetric:
 Train:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/MNIST
+    data_root: ./datasets/CIFAR100
     data_names: ['train_images.npy', 'train_labels.npy']
     transforms:
       - ClsResize:
@@ -94,7 +94,7 @@ Train:
 Eval:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/MNIST
+    data_root: ./datasets/CIFAR100
     data_names: ['val_images.npy', 'val_labels.npy']
     transforms:
       - ClsResize:
@@ -113,7 +113,7 @@ Eval:
 Test:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/MNIST
+    data_root: ./datasets/CIFAR100
     data_names: ['test_images.npy', 'test_labels.npy']
     transforms:
       - ClsResize:
@@ -132,7 +132,7 @@ Test:
 TestTemplate:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/MNIST
+    data_root: ./datasets/CIFAR100
     data_names: ['test_images_split.npy', 'test_labels_split.npy']
     transforms:
       - ClsResize:
@@ -151,7 +151,7 @@ TestTemplate:
 Template:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/MNIST
+    data_root: ./datasets/CIFAR100
     data_names: ['template_images.npy', 'template_labels.npy']
     transforms:
       - ClsResize:

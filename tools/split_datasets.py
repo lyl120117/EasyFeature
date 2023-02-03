@@ -11,27 +11,38 @@ DATASETS = {
     'CIFAR100': datasets.CIFAR100,
     'MNIST': datasets.MNIST,
     'FashionMNIST': datasets.FashionMNIST,
-    'CelebA': datasets.CelebA,
+    'CelebA': [datasets.CelebA, [{
+        'split': 'all'
+    }, {
+        'split': 'test'
+    }]],
+    'Omniglot':
+    [datasets.Omniglot, [{
+        'background': True
+    }, {
+        'background': False
+    }]],
 }
 
 
 def load_data(data_root, dataset_type, download=True):
     #将数据加载进来，本地已经下载好， root=os.getcwd()为自动获取与源码文件同级目录下的数据集路径
     dataset = DATASETS[dataset_type]
-    if dataset_type == 'CelebA':
-        train_data = dataset(root=data_root, split='all', download=download)
-        test_data = dataset(root=data_root, split='test', download=download)
-        label_dicts = None
+    if type(dataset) is list:
+        dataset, args = dataset
+        train_data = dataset(root=data_root, download=download, **args[0])
+        test_data = dataset(root=data_root, download=download, **args[1])
     else:
         train_data = dataset(root=data_root, train=True, download=download)
         test_data = dataset(root=data_root, train=False, download=download)
-        label_dicts = train_data.classes
 
-        #将数据转换成numpy格式
-        train_images = np.array(train_data.data)
-        train_labels = np.array(train_data.targets)
-        test_images = np.array(test_data.data)
-        test_labels = np.array(test_data.targets)
+    label_dicts = train_data.classes if train_data.hasattr('classes') else None
+
+    #将数据转换成numpy格式
+    train_images = np.array(train_data.data)
+    train_labels = np.array(train_data.targets)
+    test_images = np.array(test_data.data)
+    test_labels = np.array(test_data.targets)
 
     labels = np.concatenate((train_labels, test_labels))
     class_num = len(np.unique(labels))

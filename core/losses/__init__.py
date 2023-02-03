@@ -20,7 +20,7 @@ __all__ = ['build_loss']
 
 
 def build_loss(config):
-    support_dict = ['ClsLoss']
+    support_dict = ['ClsLoss', 'ClsDecayLoss']
     config = copy.deepcopy(config)
     module_name = config.pop('name')
     assert module_name in support_dict, Exception(

@@ -6,7 +6,7 @@ Global:
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [0, 100]
   save_epoch_step: 1
-  save_model_dir: ./output/mnist/mnist_digits_arc/
+  save_model_dir: ./output/mnist/mnist_digits_add_lsoftmax/
   cal_metric_during_train: True
   checkpoints: 
   pretrained_model:
@@ -24,16 +24,17 @@ Architecture:
     conv_channels: [[3, 64, 3], [3, 64, 3], [3, 64, 3]]
     input_size: 28
     out_channels: 5
-    use_bias: True
   Head:
-    name: ArcMarginHead
+    name: AddLSoftmaxHead
     class_num: 10
-    m: 0.5
-    s: 1
-    
+    s: 6
+    margin: 0.5
+    base: 1000
+    gamma: 0.000025
+    power: 45
 
 Loss:
-  name: ClsLoss
+  name: ClsDecayLoss
 
 # Optimizer:
 #   name: Adam
@@ -53,6 +54,7 @@ Optimizer:
 
 Scheduler:
   name: MultiStep
+  # milestones: [68, 85]
   milestones: [40, 60]
   gamma: 0.1
 

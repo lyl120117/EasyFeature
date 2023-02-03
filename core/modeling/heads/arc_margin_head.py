@@ -31,20 +31,17 @@ class ArcMarginHead(nn.Module):
 
         input = F.normalize(input, dim=1)
         if self.training:
-            w *= self.s
-            input *= self.s
             cos_theta = input.mm(w)
-            sp = self.s**2
             with torch.no_grad():
-                theta_m = torch.acos(cos_theta / sp)
+                theta_m = torch.acos(cos_theta)
                 theta_m.scatter_(1, targets.view(-1, 1), self.m, reduce='add')
                 theta_m.clamp_(1e-5, 3.14159)
-                d_theta = torch.cos(theta_m) * sp - cos_theta
+                d_theta = torch.cos(theta_m) - cos_theta
                 # d_theta = torch.where(cos_theta > 0, d_theta,
                 #                       torch.zeros_like(d_theta))
 
             logits = cos_theta + d_theta
-            # logits *= self.s
+            logits *= self.s
         else:
             logits = input.mm(w)
         return logits

@@ -27,6 +27,8 @@ class ClsPostProcess(object):
     def __call__(self, preds, label=None, *args, **kwargs):
         if isinstance(preds, torch.Tensor):
             preds = preds.cpu().detach().numpy()
+        if len(preds) == 2:
+            preds = preds[0]
         pred_idxs = preds.argmax(axis=1)
 
         decode_out = [(self.dicts[idx], preds[i, idx])

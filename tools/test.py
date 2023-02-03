@@ -212,6 +212,7 @@ def save(args, default_features, features):
     file_path = os.path.join(root_dir, 'fc_weight_norms.png')
     save_plots(file_path,
                np.linalg.norm(default_features, axis=1),
+               format_strs='r.',
                labels='fc_weight_norms',
                xlabel='count',
                ylabel='fc_weight_norms')
@@ -220,6 +221,7 @@ def save(args, default_features, features):
     file_path = os.path.join(root_dir, 'feature_norms.png')
     save_plots(file_path,
                np.linalg.norm(features, axis=1),
+               format_strs='r.',
                labels='feature_norms',
                xlabel='count',
                ylabel='feature_norms')
