@@ -6,7 +6,7 @@ Global:
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [0, 100]
   save_epoch_step: 1
-  save_model_dir: ./output/mnist/mnist_digits/
+  save_model_dir: ./output/mnist/mnist_digits_lsoftmax/
   cal_metric_during_train: True
   checkpoints: 
   pretrained_model:
@@ -17,16 +17,20 @@ Global:
 
 
 Architecture:
-  in_channels: 1
+  in_channels: 3
   Backbone:
     name: LSoftmaxBackbone
     input_conv: [3, 1, 64]
-    conv_channels: [[3, 64, 3], [3, 64, 3], [3, 64, 3]]
-    input_size: 28
-    out_channels: 256
+    conv_channels: [[3, 64, 4], [3, 96, 4], [3, 128, 4]]
+    input_size: 32
+    out_channels: 5
   Head:
-    name: ClsHead
+    name: LSoftmaxHead
     class_num: 10
+    margin: 1
+    base: 1000
+    gamma: 0.000025
+    power: 45
 
 Loss:
   name: ClsLoss
@@ -49,6 +53,7 @@ Optimizer:
 
 Scheduler:
   name: MultiStep
+  # milestones: [68, 85]
   milestones: [40, 60]
   gamma: 0.1
 
@@ -73,11 +78,11 @@ Train:
     data_names: ['train_images.npy', 'train_labels.npy']
     transforms:
       - ClsResize:
-          size: [28, 28]
+          size: [32, 32]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.4913997551666284, 0.48215855929893703, 0.4465309133731618]
+          std: [0.24703225141799082, 0.24348516474564, 0.26158783926049628]
       - ToTensor:
   loader:
     shuffle: True
@@ -93,11 +98,11 @@ Eval:
     data_names: ['val_images.npy', 'val_labels.npy']
     transforms:
       - ClsResize:
-          size: [28, 28]
+          size: [32, 32]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.4913997551666284, 0.48215855929893703, 0.4465309133731618]
+          std: [0.24703225141799082, 0.24348516474564, 0.26158783926049628]
       - ToTensor:
   loader:
     shuffle: False
@@ -112,11 +117,11 @@ Test:
     data_names: ['test_images.npy', 'test_labels.npy']
     transforms:
       - ClsResize:
-          size: [28, 28]
+          size: [32, 32]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.4913997551666284, 0.48215855929893703, 0.4465309133731618]
+          std: [0.24703225141799082, 0.24348516474564, 0.26158783926049628]
       - ToTensor:
   loader:
     shuffle: False
@@ -131,11 +136,11 @@ TestTemplate:
     data_names: ['test_images_split.npy', 'test_labels_split.npy']
     transforms:
       - ClsResize:
-          size: [28, 28]
+          size: [32, 32]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.4913997551666284, 0.48215855929893703, 0.4465309133731618]
+          std: [0.24703225141799082, 0.24348516474564, 0.26158783926049628]
       - ToTensor:
   loader:
     shuffle: False
@@ -150,11 +155,11 @@ Template:
     data_names: ['template_images.npy', 'template_labels.npy']
     transforms:
       - ClsResize:
-          size: [28, 28]
+          size: [32, 32]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.4913997551666284, 0.48215855929893703, 0.4465309133731618]
+          std: [0.24703225141799082, 0.24348516474564, 0.26158783926049628]
       - ToTensor:
   loader:
     shuffle: False

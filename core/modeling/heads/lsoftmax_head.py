@@ -38,7 +38,7 @@ class LSoftmaxHead(nn.Module):
         self.signs[1::2] = -1
 
     def get_weights(self):
-        return self.weight
+        return self.weight.t()
 
     def to(self, device):
         self.device = device

@@ -138,6 +138,7 @@ def eval_feature(model,
         features = []
         # max_iter = len(valid_dataloader) - 1 if platform.system(
         # ) == "Windows" else len(valid_dataloader)
+        pred_features = []
         for idx, batch in enumerate(valid_dataloader):
             # if idx >= max_iter:
             #     break
@@ -154,12 +155,14 @@ def eval_feature(model,
                 img = img.detach().cpu().numpy()
 
                 features.append((pred, label, img))
+                pred_features.append(pred)
                 count += 1
             # Obtain usable results from post-processing methods
             total_time += time.time() - start
 
+        pred_features = np.array(pred_features)
         post_result = post_process_class(templates, features)
-        save(post_result)
+        save(post_result, default_features, pred_features)
         eval_class(post_result)
         # Get final metric，eg. acc or hmean
         metric = eval_class.get_metric()
@@ -168,11 +171,13 @@ def eval_feature(model,
     metric['count'] = int(count)
     metric['template count'] = int(template_count)
     metric['inference template count'] = int(infer_template_count)
+    metric['feature avg norms'] = np.mean(np.linalg.norm(pred_features,
+                                                         axis=1))
     metric['fps'] = int(count / total_time)
     return metric
 
 
-def save(args):
+def save(args, default_features, features):
     cosines, inter_cosines, inner_cosines, inter_cosines_avg, inner_cosines_avg, pred_labels, true_labels = args
 
     positive_cosines = cosines[pred_labels == true_labels]
@@ -202,6 +207,22 @@ def save(args):
 
     file_path = os.path.join(root_dir, 'inner_cosines_avg.png')
     save_hist(file_path, inner_cosines_avg)
+    print('Saved figure to {}'.format(file_path))
+
+    file_path = os.path.join(root_dir, 'fc_weight_norms.png')
+    save_plots(file_path,
+               np.linalg.norm(default_features, axis=1),
+               labels='fc_weight_norms',
+               xlabel='count',
+               ylabel='fc_weight_norms')
+    print('Saved figure to {}'.format(file_path))
+
+    file_path = os.path.join(root_dir, 'feature_norms.png')
+    save_plots(file_path,
+               np.linalg.norm(features, axis=1),
+               labels='feature_norms',
+               xlabel='count',
+               ylabel='feature_norms')
     print('Saved figure to {}'.format(file_path))
 
 
@@ -245,6 +266,9 @@ def main(config):
         post_feature_process_class = build_post_process(
             config["PostFeatureProcess"], global_config)
         default_features = model.head.get_weights().detach().cpu().numpy()
+        default_feature_norms = np.linalg.norm(default_features, axis=1)
+        logger.info("FC weight avg norm: {}".format(
+            np.mean(default_feature_norms)))
         if template_mode == 1:
             logger.info(
                 "template mode is 1, use fc weight as default features")

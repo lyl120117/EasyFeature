@@ -6,7 +6,7 @@ Global:
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [0, 100]
   save_epoch_step: 1
-  save_model_dir: ./output/mnist/mnist_digits/
+  save_model_dir: ./output/mnist/mnist_digits_arc/
   cal_metric_during_train: True
   checkpoints: 
   pretrained_model:
@@ -23,10 +23,14 @@ Architecture:
     input_conv: [3, 1, 64]
     conv_channels: [[3, 64, 3], [3, 64, 3], [3, 64, 3]]
     input_size: 28
-    out_channels: 256
+    out_channels: 5
+    use_bias: True
   Head:
-    name: ClsHead
+    name: ArcMarginHead
     class_num: 10
+    m: 0.5
+    s: 1.3
+    
 
 Loss:
   name: ClsLoss
@@ -76,8 +80,8 @@ Train:
           size: [28, 28]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.5]
+          std: [0.5]
       - ToTensor:
   loader:
     shuffle: True
@@ -96,8 +100,8 @@ Eval:
           size: [28, 28]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.5]
+          std: [0.5]
       - ToTensor:
   loader:
     shuffle: False
@@ -115,8 +119,8 @@ Test:
           size: [28, 28]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.5]
+          std: [0.5]
       - ToTensor:
   loader:
     shuffle: False
@@ -134,8 +138,8 @@ TestTemplate:
           size: [28, 28]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.5]
+          std: [0.5]
       - ToTensor:
   loader:
     shuffle: False
@@ -153,8 +157,8 @@ Template:
           size: [28, 28]
       - ToCHWImage:
       - Normalize:
-          mean: [0.1307]
-          std: [0.3081]
+          mean: [0.5]
+          std: [0.5]
       - ToTensor:
   loader:
     shuffle: False

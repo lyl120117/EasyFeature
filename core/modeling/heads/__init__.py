@@ -14,12 +14,13 @@
 
 from .cls_head import ClsHead
 from .lsoftmax_head import LSoftmaxHead
+from .arc_margin_head import ArcMarginHead
 
 __all__ = ['build_head']
 
 
 def build_head(config):
-    support_dict = ['ClsHead', 'LSoftmaxHead']
+    support_dict = ['ClsHead', 'LSoftmaxHead', 'ArcMarginHead']
 
     module_name = config.pop('name')
     assert module_name in support_dict, Exception(

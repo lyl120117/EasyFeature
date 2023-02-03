@@ -10,6 +10,7 @@ class LSoftmaxBackbone(nn.Module):
                  input_size=28,
                  input_conv=[3, 1, 64],
                  conv_channels=[[3, 64, 3], [3, 64, 3], [3, 64, 3]],
+                 use_bias=True,
                  out_channels=128):
         super(LSoftmaxBackbone, self).__init__()
         self.out_channels = out_channels
@@ -52,7 +53,8 @@ class LSoftmaxBackbone(nn.Module):
         self.fc = nn.Sequential(
             OrderedDict([('fc0',
                           nn.Linear(in_features=feature_size,
-                                    out_features=self.out_channels)),
+                                    out_features=self.out_channels,
+                                    bias=use_bias)),
                          ('fc0_bn', nn.BatchNorm1d(self.out_channels))]))
 
         self.reset_parameters(conv_channels)
@@ -61,7 +63,8 @@ class LSoftmaxBackbone(nn.Module):
 
         def init_kaiming(layer: nn.Module):
             init.kaiming_normal_(layer.weight.data)
-            init.constant_(layer.bias.data, val=0)
+            if layer.bias is not None:
+                init.constant_(layer.bias.data, val=0)
 
         init_kaiming(self.linear_relu_stack.conv0_0)
         for i, layers in enumerate(conv_channels):
