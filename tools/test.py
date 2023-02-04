@@ -252,7 +252,8 @@ def main(config):
                                             global_config)
     label_list = post_process_class.label_list
     logger.info(f"Dictionary size: {len(label_list)}")
-    logger.info(f"Dictionary list: {label_list}")
+    if len(label_list) < 100:
+        logger.info(f"Dictionary list: {label_list}")
 
     test_dataloader = build_dataloader(config, "Test", logger)
 

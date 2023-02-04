@@ -2,41 +2,62 @@ import torchvision.datasets as datasets
 import numpy as np
 import cv2
 import shutil
+import copy
 import os
 import random
 from argparse import ArgumentParser
+
+
+class BaseDataset:
+
+    def __init__(self, root, train, download):
+        self.root = root
+        self.train = train
+        self.download = download
+        self.data = []
+        self.targets = []
+        self.classes = []
+        self.class_to_idx = {}
+        self._load_data()
+
+    def _load_data(self):
+        raise NotImplementedError
+
+
+class Omniglot(BaseDataset):
+
+    def __init__(self, root, train, download):
+        super(Omniglot, self).__init__(root, train, download)
+
+    def _load_data(self):
+        datas = datasets.Omniglot(root=self.root,
+                                  download=self.download,
+                                  background=self.train)
+
+        self.classes = datas._characters
+        for image, label in datas:
+            self.data.append(np.array(image))
+            self.targets.append(label)
+
 
 DATASETS = {
     'CIFAR10': datasets.CIFAR10,
     'CIFAR100': datasets.CIFAR100,
     'MNIST': datasets.MNIST,
     'FashionMNIST': datasets.FashionMNIST,
-    'CelebA': [datasets.CelebA, [{
-        'split': 'all'
-    }, {
-        'split': 'test'
-    }]],
-    'Omniglot':
-    [datasets.Omniglot, [{
-        'background': True
-    }, {
-        'background': False
-    }]],
+    'CelebA': datasets.CelebA,
+    'Omniglot': Omniglot
 }
 
 
 def load_data(data_root, dataset_type, download=True):
     #将数据加载进来，本地已经下载好， root=os.getcwd()为自动获取与源码文件同级目录下的数据集路径
     dataset = DATASETS[dataset_type]
-    if type(dataset) is list:
-        dataset, args = dataset
-        train_data = dataset(root=data_root, download=download, **args[0])
-        test_data = dataset(root=data_root, download=download, **args[1])
-    else:
-        train_data = dataset(root=data_root, train=True, download=download)
-        test_data = dataset(root=data_root, train=False, download=download)
 
-    label_dicts = train_data.classes if train_data.hasattr('classes') else None
+    train_data = dataset(root=data_root, train=True, download=download)
+    test_data = dataset(root=data_root, train=False, download=download)
+
+    label_dicts = train_data.classes
 
     #将数据转换成numpy格式
     train_images = np.array(train_data.data)
@@ -44,10 +65,14 @@ def load_data(data_root, dataset_type, download=True):
     test_images = np.array(test_data.data)
     test_labels = np.array(test_data.targets)
 
-    labels = np.concatenate((train_labels, test_labels))
-    class_num = len(np.unique(labels))
     train_class_num = len(np.unique(train_labels))
     test_class_num = len(np.unique(test_labels))
+
+    dicts = copy.deepcopy(label_dicts)
+    for label_dict in test_data.classes:
+        if label_dict not in dicts:
+            dicts.append(label_dict)
+    class_num = len(dicts)
 
     return train_images, train_labels, test_images, test_labels, class_num, train_class_num, test_class_num, label_dicts
 
@@ -81,6 +106,7 @@ def debug_datasets(images, labels, label_dicts, dataset_type, debug_count=10):
             label) in enumerate(zip(images[:debug_count],
                                     labels[:debug_count])):
         l = label_dicts[label]
+        l = l.replace('\\', '_')
         cv2.imwrite(os.path.join(output, l + '_' + str(i) + '.jpg'), image)
 
 
