@@ -53,6 +53,8 @@ class ClsResize(object):
     def __call__(self, img):
         if not isinstance(img, np.ndarray):
             raise TypeError('img should be numpy.ndarray')
+        if self.size[0] == img.shape[0]:
+            return img
         img = cv2.resize(img, self.size, interpolation=self.interpolation)
         return img
 

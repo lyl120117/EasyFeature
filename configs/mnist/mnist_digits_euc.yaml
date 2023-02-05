@@ -6,7 +6,7 @@ Global:
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [0, 100]
   save_epoch_step: 1
-  save_model_dir: ./output/mnist/mnist_digits_add_lsoftmax/
+  save_model_dir: ./output/mnist/mnist_digits_euc/
   cal_metric_during_train: True
   checkpoints: 
   pretrained_model:
@@ -25,16 +25,13 @@ Architecture:
     input_size: 28
     out_channels: 5
   Head:
-    name: AddLSoftmaxHead
+    name: EucMarginHead
     class_num: 10
-    s: 6
-    margin: 0.5
-    base: 1000
-    gamma: 0.000025
-    power: 45
+    margin_add: 0.5
+    
 
 Loss:
-  name: ClsDecayLoss
+  name: ClsLoss
 
 # Optimizer:
 #   name: Adam

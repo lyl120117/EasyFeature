@@ -6,18 +6,17 @@ from scipy.special import binom
 import matplotlib.pyplot as plt
 
 
-class AddLSoftmaxHead(nn.Module):
+class LSoftmaxPlusHead(nn.Module):
 
     def __init__(self,
                  in_channels,
                  class_num,
-                 s=2,
                  margin=0.5,
                  base=1000,
                  gamma=0.00002,
                  power=1,
                  beta_min=1e-6):
-        super(AddLSoftmaxHead, self).__init__()
+        super(LSoftmaxPlusHead, self).__init__()
         self.margin = margin  # m
         self.beta = 0
         self.beta_min = beta_min
@@ -26,8 +25,6 @@ class AddLSoftmaxHead(nn.Module):
         self.gamma = gamma  # gamma
         self.power = power  # power
         self.iter = 0
-
-        self.s = s  # s
 
         # Initialize L-Softmax parameters
         self.weight = nn.Parameter(torch.FloatTensor(in_channels, class_num))
