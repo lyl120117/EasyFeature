@@ -23,11 +23,11 @@ Architecture:
     input_conv: [3, 1, 64]
     conv_channels: [[3, 64, 4], [3, 96, 4], [3, 128, 4]]
     input_size: 32
-    out_channels: 5
+    out_channels: 256
   Head:
     name: EucMarginHead
-    class_num: 10
-    margin_add: 1.5
+    class_num: 100
+    margin_add: 0.5
 
 Loss:
   name: ClsLoss
@@ -78,6 +78,7 @@ Train:
           size: [32, 32]
       - RandomCrop:
           padding: 4
+          prob: 0
       - RandomHorizontalFlip:
       - ToCHWImage:
       - Normalize:

@@ -23,7 +23,7 @@ Architecture:
     input_conv: [3, 1, 64]
     conv_channels: [[3, 64, 3], [3, 64, 3], [3, 64, 3]]
     input_size: 28
-    out_channels: 5
+    out_channels: 256
     use_bias: True
   Head:
     name: ArcMarginHead

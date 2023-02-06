@@ -71,3 +71,24 @@ python tools/test.py --c configs/mnist/mnist_digits_lsoftmax.yaml -o Global.pret
 ```
 acc=0.9966
 python tools/train.py --c configs/mnist/mnist_digits_arcface.yaml Global.seed=88567
+
+
+### CIFAR100
+|     Method     |  Acc   | Acc(Paper) |
+| :------------: | :----: | :--------: |
+|    Softmax     | 76.00% |   76.00%   |
+| L-Softmax(m=2) | 76.00% |   76.00%   |
+
+### Usage
+1. Download the CIFAR100 dataset and split it into train/val/test/template
+```
+python tools/split_datasets.py -dt CIFAR100 --seed 30673
+```
+
+2. Train the model, *seed* is used to reproduce the results, you can change it to get different results.
+2.1 L-Softmax
+```
+m=4
+python tools/train.py --c configs/cifar100/cifar100_lsoftmax.yaml -o Architecture.Head.margin=4 Global.save_model_dir=output/cifar100/cifar100_lsoftmax_m4 Global.seed=41403
+```
+```
