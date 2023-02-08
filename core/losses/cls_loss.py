@@ -24,7 +24,7 @@ class ClsLoss(nn.Module):
 
     def __init__(self, label_smoothing=0., reduction='mean'):
         super(ClsLoss, self).__init__()
-        self.loss_func = nn.CrossEntropyLoss(reduction=reduction,
+        self.loss_func = nn.CrossEntropyLoss(reduction='none',
                                              label_smoothing=label_smoothing)
         self.reduction = reduction
 

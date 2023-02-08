@@ -91,4 +91,9 @@ python tools/split_datasets.py -dt CIFAR100 --seed 30673
 m=4
 python tools/train.py --c configs/cifar100/cifar100_lsoftmax.yaml -o Architecture.Head.margin=4 Global.save_model_dir=output/cifar100/cifar100_lsoftmax_m4 Global.seed=41403
 ```
+
+2.2 EucMargin
+```
+margin_add=2.5 acc=0.7196
+python tools/train.py --c configs/cifar100/cifar100_eucmargin.yaml -o Global.save_model_dir=output/cifar100/cifar100_eucmargin Global.seed=49504
 ```

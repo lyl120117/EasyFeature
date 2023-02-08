@@ -24,6 +24,20 @@ import torch
 logger = get_logger()
 
 
+def get_euc_hist(preds, labels):
+    pred_idxs = preds.argmax(axis=1)
+    positive_euc = [pred[label] for pred, label in zip(preds, labels)]
+    positive_euc = np.array(positive_euc)
+    negeative_euc = []
+    for pred, label in zip(preds, labels):
+        pred = np.delete(pred, label)
+        negeative_euc.append(pred.max())
+    negeative_euc = np.array(negeative_euc)
+    error_positive_euc = positive_euc[pred_idxs != labels]
+    error_negeative_euc = negeative_euc[pred_idxs != labels]
+    return positive_euc, negeative_euc, error_positive_euc, error_negeative_euc
+
+
 def eval(model, name, valid_dataloader, post_process_class, eval_class,
          device):
     model.eval()
@@ -31,6 +45,10 @@ def eval(model, name, valid_dataloader, post_process_class, eval_class,
         total_frame = 0.0
         total_time = 0.0
         count = 0
+        positive_eucs = []
+        negeative_eucs = []
+        error_positive_eucs = []
+        error_negeative_eucs = []
         pbar = tqdm(total=len(valid_dataloader),
                     desc=name,
                     position=0,
@@ -52,8 +70,14 @@ def eval(model, name, valid_dataloader, post_process_class, eval_class,
             # Evaluate the results of the current batch
 
             post_result = post_process_class(preds, batch[1])
-
             eval_class(post_result, batch)
+
+            positive_euc, negeative_euc, error_positive_euc, error_negeative_euc = get_euc_hist(
+                preds.cpu().numpy(), batch[1])
+            positive_eucs.extend(positive_euc)
+            negeative_eucs.extend(negeative_euc)
+            error_positive_eucs.extend(error_positive_euc)
+            error_negeative_eucs.extend(error_negeative_euc)
 
             pbar.update(1)
             total_frame += len(images)
@@ -63,6 +87,13 @@ def eval(model, name, valid_dataloader, post_process_class, eval_class,
     pbar.close()
     metric['count'] = int(count)
     metric['fps'] = int(total_frame / total_time)
+    if len(positive_eucs) > 0:
+        positive_eucs = np.array(positive_eucs)
+        negeative_eucs = np.array(negeative_eucs)
+        return [
+            metric, positive_eucs, negeative_eucs, error_positive_eucs,
+            error_negeative_eucs
+        ]
     return metric
 
 
@@ -260,6 +291,24 @@ def main(config):
     test_metric = eval(model, "Test", test_dataloader, post_process_class,
                        eval_class, device)
 
+    if type(test_metric) is list:
+        test_metric, positive_eucs, negeative_eucs, error_positive_eucs, error_negeative_eucs = test_metric
+        root_dir = os.path.join(config['Global']['save_model_dir'], 'vis')
+        if not os.path.exists(root_dir):
+            os.makedirs(root_dir)
+        file_path = os.path.join(root_dir, 'inner_eucs.png')
+        save_plots(file_path, positive_eucs, 'g.', 'positive_eucs')
+        print('Saved figure to {}'.format(file_path))
+
+        file_path = os.path.join(root_dir, 'inter_eucs.png')
+        save_plots(file_path, negeative_eucs, 'r.', 'negeative_eucs')
+        print('Saved figure to {}'.format(file_path))
+
+        file_path = os.path.join(root_dir, 'error_eucs.png')
+        save_plots(file_path, [error_positive_eucs, error_negeative_eucs],
+                   ['g.', 'r.'], ['positive', 'negative'])
+        print('Saved figure to {}'.format(file_path))
+
     logger.info(log_str(test_metric))
     if infer_feature:
         backbone = model.backbone
@@ -268,6 +317,7 @@ def main(config):
         feature_eval_class = build_metric(config["FeatureMetric"])
         post_feature_process_class = build_post_process(
             config["PostFeatureProcess"], global_config)
+
         default_features = model.head.get_weights().detach().cpu().numpy()
         default_feature_norms = np.linalg.norm(default_features, axis=1)
         logger.info("FC weight avg norm: {}".format(

@@ -84,7 +84,7 @@ if __name__ == '__main__':
     input = input.to(device)
     targets = targets.to(device)
 
-    head = AddLSoftmaxHead(in_channels, class_num, margin=margin)
+    head = LSoftmaxPlusHead(in_channels, class_num, margin=margin)
     head.reset_parameters()
     output = head(input, targets)
     print('output:', output.shape)

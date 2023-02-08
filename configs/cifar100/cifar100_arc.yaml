@@ -6,7 +6,7 @@ Global:
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [0, 100]
   save_epoch_step: 1
-  save_model_dir: ./output/cifar100/cifar100_euc/
+  save_model_dir: ./output/cifar100/cifar100_arc/
   cal_metric_during_train: True
   checkpoints: 
   pretrained_model:
@@ -25,9 +25,10 @@ Architecture:
     input_size: 32
     out_channels: 256
   Head:
-    name: EucMarginHead
+    name: ArcMarginHead
     class_num: 100
-    margin_add: 2.5
+    m: 0.5
+    s: 4
 
 Loss:
   name: ClsLoss

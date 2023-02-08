@@ -33,7 +33,7 @@ Architecture:
     power: 45
 
 Loss:
-  name: ClsDecayLoss
+  name: ClsLoss
 
 # Optimizer:
 #   name: Adam

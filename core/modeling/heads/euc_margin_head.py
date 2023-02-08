@@ -25,7 +25,7 @@ class EucMarginHead(nn.Module):
 
         self.margin_add = margin_add
 
-        assert self.margin_add >= 0 and self.margin_add < 4, "margin_add must be lager than 0 and less than 4, but got {}".format(
+        assert self.margin_add >= 0, "margin_add must be lager than 0, but got {}".format(
             self.margin_add)
 
         self.weight = Parameter(
@@ -50,6 +50,7 @@ class EucMarginHead(nn.Module):
             one_hot = torch.zeros(output.size(), device=output.device)
             one_hot.scatter_(1, targets.view(-1, 1).long(), 1)
             output = output + one_hot * self.margin_add
+            output = torch.clamp_min(output, min=1e-12)
         output = -output
         return output
 

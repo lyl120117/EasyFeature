@@ -27,7 +27,7 @@ Architecture:
   Head:
     name: EucMarginHead
     class_num: 10
-    margin_add: 1.5
+    margin_add: 2.5
     
 
 Loss:
