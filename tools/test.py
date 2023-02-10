@@ -21,8 +21,6 @@ from tools.visualize import save_hist, save_plots
 
 import torch
 
-logger = get_logger()
-
 
 def get_euc_hist(preds, labels):
     pred_idxs = preds.argmax(axis=1)
@@ -265,6 +263,10 @@ def main(config):
               and torch.cuda.is_available() else "cpu")
     infer_feature = global_config.get("infer_feature", False)
     template_mode = global_config.get("template_mode", 0)
+
+    log_file = os.path.join(global_config["save_model_dir"], "test.log")
+    logger = get_logger(log_file=log_file)
+
     # build model
     model = build_model(config["Architecture"])
     load_model(logger, config, model)
