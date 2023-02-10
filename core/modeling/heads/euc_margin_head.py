@@ -18,12 +18,17 @@ class EucMarginHead(nn.Module):
             cos(theta + m)
         """
 
-    def __init__(self, in_channels, class_num, margin_add=0.5):
+    def __init__(self,
+                 in_channels,
+                 class_num,
+                 margin_add=0.5,
+                 easy_margin=False):
         super(EucMarginHead, self).__init__()
         self.in_features = in_channels
         self.out_features = class_num
 
         self.margin_add = margin_add
+        self.easy_margin = easy_margin
 
         assert self.margin_add >= 0, "margin_add must be lager than 0, but got {}".format(
             self.margin_add)
@@ -49,8 +54,11 @@ class EucMarginHead(nn.Module):
         if self.training:
             one_hot = torch.zeros(output.size(), device=output.device)
             one_hot.scatter_(1, targets.view(-1, 1).long(), 1)
-            output = output + one_hot * self.margin_add
-            output = torch.clamp_min(output, min=1e-12)
+            if self.easy_margin:
+                output = output + torch.where(logits * one_hot > 0,
+                                              self.margin_add, 0)
+            else:
+                output = output + one_hot * self.margin_add
         output = -output
         return output
 

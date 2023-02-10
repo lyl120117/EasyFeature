@@ -1,6 +1,6 @@
 Global:
   use_gpu: true
-  epoch_num: 70
+  epoch_num: 40
   log_smooth_window: 20
   print_batch_step: 20
   # evaluation is run every 5000 iterations after the 4000th iteration
@@ -28,6 +28,7 @@ Architecture:
     name: EucMarginHead
     class_num: 10
     margin_add: 2.5
+    easy_margin: True
     
 
 Loss:
@@ -52,7 +53,7 @@ Optimizer:
 Scheduler:
   name: MultiStep
   # milestones: [68, 85]
-  milestones: [40, 60]
+  milestones: [10, 30]
   gamma: 0.1
 
 PostProcess:

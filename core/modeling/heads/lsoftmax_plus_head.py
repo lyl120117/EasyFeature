@@ -11,7 +11,7 @@ class LSoftmaxPlusHead(nn.Module):
     def __init__(self,
                  in_channels,
                  class_num,
-                 margin=0.5,
+                 margin=1,
                  base=1000,
                  gamma=0.00002,
                  power=1,
@@ -55,7 +55,7 @@ class LSoftmaxPlusHead(nn.Module):
 
             with torch.no_grad():
                 theta_target = torch.acos(cos_theta_target)
-                theta_m_target = theta_target + self.margin
+                theta_m_target = theta_target * self.margin
                 theta_m_target.clamp_(1e-5, 3.14159)
                 d_theta_m_target = torch.cos(theta_m_target) - cos_theta_target
             logit_target_updated = (cos_theta_target + d_theta_m_target) * (

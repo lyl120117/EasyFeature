@@ -95,5 +95,10 @@ python tools/train.py --c configs/cifar100/cifar100_lsoftmax.yaml -o Architectur
 2.2 EucMargin
 ```
 margin_add=2.5 acc=0.7196
-python tools/train.py --c configs/cifar100/cifar100_eucmargin.yaml -o Global.save_model_dir=output/cifar100/cifar100_eucmargin Global.seed=49504
+python tools/train.py --c configs/cifar100/cifar100_euc.yaml -o Global.seed=49504
+```
+
+```
+margin_add=2.5 acc=0.9262
+python tools/train.py --c configs/cifar10/cifar10_euc.yaml -o Global.seed=82165
 ```

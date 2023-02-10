@@ -29,7 +29,7 @@ Architecture:
     name: ArcMarginHead
     class_num: 10
     m: 0.5
-    s: 1
+    s: 4
     
 
 Loss:

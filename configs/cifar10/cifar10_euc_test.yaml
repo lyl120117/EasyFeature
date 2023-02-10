@@ -6,12 +6,12 @@ Global:
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [0, 100]
   save_epoch_step: 1
-  save_model_dir: ./output/cifar100/cifar100_euc/
+  save_model_dir: ./output/cifar10/cifar10_euc_test/
   cal_metric_during_train: True
   checkpoints: 
   pretrained_model:
   use_visualdl: True
-  dict_path: ./datasets/CIFAR100/dicts.txt
+  dict_path: ./datasets/CIFAR10/dicts.txt
   infer_feature: True
   template_mode: 0 # 0: template, 1: FC, 2: FC + template
 
@@ -21,14 +21,13 @@ Architecture:
   Backbone:
     name: LSoftmaxBackbone
     input_conv: [3, 1, 64]
-    conv_channels: [[3, 64, 4], [3, 96, 4], [3, 128, 4]]
+    conv_channels: [[3, 64, 4], [3, 96, 4], [3, 256, 4]]
     input_size: 32
     out_channels: 256
   Head:
     name: EucMarginHead
-    class_num: 100
+    class_num: 10
     margin_add: 2.5
-
 
 Loss:
   name: ClsLoss
@@ -52,7 +51,6 @@ Optimizer:
 Scheduler:
   name: MultiStep
   milestones: [68, 85]
-  # milestones: [40, 60]
   gamma: 0.1
 
 PostProcess:
@@ -72,19 +70,16 @@ FeatureMetric:
 Train:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/CIFAR100
+    data_root: ./datasets/CIFAR10
     data_names: ['train_images.npy', 'train_labels.npy']
     transforms:
       - ClsResize:
           size: [32, 32]
-      - RandomCrop:
-          padding: 4
-          prob: 0
       - RandomHorizontalFlip:
       - ToCHWImage:
       - Normalize:
-          mean: [0.5071, 0.4865, 0.4409]
-          std: [0.2673, 0.2564, 0.2762]
+          mean: [0.4914, 0.4822, 0.4465]
+          std: [0.2470, 0.2435, 0.2616]
       - ToTensor:
   loader:
     shuffle: True
@@ -96,15 +91,15 @@ Train:
 Eval:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/CIFAR100
+    data_root: ./datasets/CIFAR10
     data_names: ['val_images.npy', 'val_labels.npy']
     transforms:
       - ClsResize:
           size: [32, 32]
       - ToCHWImage:
       - Normalize:
-          mean: [0.5071, 0.4865, 0.4409]
-          std: [0.2673, 0.2564, 0.2762]
+          mean: [0.4914, 0.4822, 0.4465]
+          std: [0.2470, 0.2435, 0.2616]
       - ToTensor:
   loader:
     shuffle: False
@@ -115,15 +110,15 @@ Eval:
 Test:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/CIFAR100
+    data_root: ./datasets/CIFAR10
     data_names: ['test_images.npy', 'test_labels.npy']
     transforms:
       - ClsResize:
           size: [32, 32]
       - ToCHWImage:
       - Normalize:
-          mean: [0.5071, 0.4865, 0.4409]
-          std: [0.2673, 0.2564, 0.2762]
+          mean: [0.4914, 0.4822, 0.4465]
+          std: [0.2470, 0.2435, 0.2616]
       - ToTensor:
   loader:
     shuffle: False
@@ -134,15 +129,15 @@ Test:
 TestTemplate:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/CIFAR100
+    data_root: ./datasets/CIFAR10
     data_names: ['test_images_split.npy', 'test_labels_split.npy']
     transforms:
       - ClsResize:
           size: [32, 32]
       - ToCHWImage:
       - Normalize:
-          mean: [0.5071, 0.4865, 0.4409]
-          std: [0.2673, 0.2564, 0.2762]
+          mean: [0.4914, 0.4822, 0.4465]
+          std: [0.2470, 0.2435, 0.2616]
       - ToTensor:
   loader:
     shuffle: False
@@ -153,15 +148,15 @@ TestTemplate:
 Template:
   dataset:
     name: SimpleDataset
-    data_root: ./datasets/CIFAR100
+    data_root: ./datasets/CIFAR10
     data_names: ['template_images.npy', 'template_labels.npy']
     transforms:
       - ClsResize:
           size: [32, 32]
       - ToCHWImage:
       - Normalize:
-          mean: [0.5071, 0.4865, 0.4409]
-          std: [0.2673, 0.2564, 0.2762]
+          mean: [0.4914, 0.4822, 0.4465]
+          std: [0.2470, 0.2435, 0.2616]
       - ToTensor:
   loader:
     shuffle: False
