@@ -17,6 +17,7 @@ from .lsoftmax_head import LSoftmaxHead
 from .arc_margin_head import ArcMarginHead
 from .lsoftmax_plus_head import LSoftmaxPlusHead
 from .euc_margin_head import EucMarginHead
+from .euc_plus_margin_head import EucPlusMarginHead
 
 __all__ = ['build_head']
 
@@ -24,7 +25,7 @@ __all__ = ['build_head']
 def build_head(config):
     support_dict = [
         'ClsHead', 'LSoftmaxHead', 'ArcMarginHead', 'LSoftmaxPlusHead',
-        'EucMarginHead'
+        'EucMarginHead', 'EucPlusMarginHead'
     ]
 
     module_name = config.pop('name')

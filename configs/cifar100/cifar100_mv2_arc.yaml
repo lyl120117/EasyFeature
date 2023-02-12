@@ -1,0 +1,167 @@
+Global:
+  use_gpu: true
+  epoch_num: 105
+  log_smooth_window: 20
+  print_batch_step: 20
+  # evaluation is run every 5000 iterations after the 4000th iteration
+  eval_batch_step: [0, 100]
+  save_epoch_step: 1
+  save_model_dir: ./output/cifar100/cifar100_mv2_arc/
+  cal_metric_during_train: True
+  checkpoints: 
+  pretrained_model:
+  use_visualdl: True
+  dict_path: ./datasets/CIFAR100/dicts.txt
+  infer_feature: True
+  template_mode: 0 # 0: template, 1: FC, 2: FC + template
+
+
+Architecture:
+  in_channels: 3
+  Backbone:
+    name: MobileNetV2
+    out_channels: 256
+  Head:
+    name: ArcMarginHead
+    class_num: 100
+    m: 0.5
+    s: 4
+
+Loss:
+  name: ClsLoss
+
+# Optimizer:
+#   name: Adam
+#   beta1: 0.9
+#   beta2: 0.999
+#   lr: 0.001
+
+# Scheduler:
+#   name: CosineAnnealing
+
+Optimizer:
+  name: SGD
+  lr: 0.1
+  momentum: 0.9
+  weight_decay: 0.0005
+  enable_bais_decay: true
+
+Scheduler:
+  name: MultiStep
+  milestones: [68, 85]
+  # milestones: [40, 60]
+  gamma: 0.1
+
+PostProcess:
+  name: ClsPostProcess
+
+Metric:
+  name: ClsMetric
+  main_indicator: acc
+
+PostFeatureProcess:
+  name: FeaturePostProcess
+
+FeatureMetric:
+  name: FeatureMetric
+  main_indicator: acc
+
+Train:
+  dataset:
+    name: SimpleDataset
+    data_root: ./datasets/CIFAR100
+    data_names: ['train_images.npy', 'train_labels.npy']
+    transforms:
+      - ClsResize:
+          size: [32, 32]
+      - RandomCrop:
+          padding: 4
+          prob: 0
+      - RandomHorizontalFlip:
+      - ToCHWImage:
+      - Normalize:
+          mean: [0.5071, 0.4865, 0.4409]
+          std: [0.2673, 0.2564, 0.2762]
+      - ToTensor:
+  loader:
+    shuffle: True
+    batch_size_per_card: 256
+    drop_last: True
+    num_workers: 1
+
+
+Eval:
+  dataset:
+    name: SimpleDataset
+    data_root: ./datasets/CIFAR100
+    data_names: ['val_images.npy', 'val_labels.npy']
+    transforms:
+      - ClsResize:
+          size: [32, 32]
+      - ToCHWImage:
+      - Normalize:
+          mean: [0.5071, 0.4865, 0.4409]
+          std: [0.2673, 0.2564, 0.2762]
+      - ToTensor:
+  loader:
+    shuffle: False
+    batch_size_per_card: 256
+    drop_last: False
+    num_workers: 1
+    
+Test:
+  dataset:
+    name: SimpleDataset
+    data_root: ./datasets/CIFAR100
+    data_names: ['test_images.npy', 'test_labels.npy']
+    transforms:
+      - ClsResize:
+          size: [32, 32]
+      - ToCHWImage:
+      - Normalize:
+          mean: [0.5071, 0.4865, 0.4409]
+          std: [0.2673, 0.2564, 0.2762]
+      - ToTensor:
+  loader:
+    shuffle: False
+    batch_size_per_card: 256
+    drop_last: False
+    num_workers: 1
+    
+TestTemplate:
+  dataset:
+    name: SimpleDataset
+    data_root: ./datasets/CIFAR100
+    data_names: ['test_images_split.npy', 'test_labels_split.npy']
+    transforms:
+      - ClsResize:
+          size: [32, 32]
+      - ToCHWImage:
+      - Normalize:
+          mean: [0.5071, 0.4865, 0.4409]
+          std: [0.2673, 0.2564, 0.2762]
+      - ToTensor:
+  loader:
+    shuffle: False
+    batch_size_per_card: 256
+    drop_last: False
+    num_workers: 1
+    
+Template:
+  dataset:
+    name: SimpleDataset
+    data_root: ./datasets/CIFAR100
+    data_names: ['template_images.npy', 'template_labels.npy']
+    transforms:
+      - ClsResize:
+          size: [32, 32]
+      - ToCHWImage:
+      - Normalize:
+          mean: [0.5071, 0.4865, 0.4409]
+          std: [0.2673, 0.2564, 0.2762]
+      - ToTensor:
+  loader:
+    shuffle: False
+    batch_size_per_card: 4
+    drop_last: False
+    num_workers: 1
