@@ -15,12 +15,16 @@
 import copy
 
 from .cls_loss import ClsLoss
+from .euc_loss import EucLoss
+from .focal_euc_loss import FocalEucLoss
+
+from .combine_loss import CombineLoss
 
 __all__ = ['build_loss']
 
 
 def build_loss(config):
-    support_dict = ['ClsLoss']
+    support_dict = ['ClsLoss', 'EucLoss', 'FocalEucLoss', 'CombineLoss']
     config = copy.deepcopy(config)
     module_name = config.pop('name')
     assert module_name in support_dict, Exception(

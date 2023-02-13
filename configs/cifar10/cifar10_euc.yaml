@@ -27,10 +27,12 @@ Architecture:
   Head:
     name: EucMarginHead
     class_num: 10
-    margin_add: 2.5
-
+    margin_add: 0
+    
 Loss:
-  name: ClsLoss
+  name: EucLoss
+  m: 10
+  # name: ClsLoss
 
 # Optimizer:
 #   name: Adam

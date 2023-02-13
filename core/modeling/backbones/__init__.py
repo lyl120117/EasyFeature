@@ -15,13 +15,14 @@ import copy
 
 from .lsoftmax import LSoftmaxBackbone
 from .mobilenet import MobileNetV2
+from .resnet import ResNet18
 
 __all__ = ["build_backbone"]
 
 
 def build_backbone(config):
     config = copy.deepcopy(config)
-    support_dict = ['LSoftmaxBackbone', 'MobileNetV2']
+    support_dict = ['LSoftmaxBackbone', 'MobileNetV2', 'ResNet18']
 
     module_name = config.pop("name")
     assert module_name in support_dict, Exception(
