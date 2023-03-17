@@ -1,104 +1,51 @@
 # EasyFeature
-The repo aims to using softmax based metric learning methods for feature learning. Such as L-Softmax, SphereFace, ArcFace and AdaFace
+The EasyFeature repo aims to use softmax-based metric learning methods for feature learning, including L-Softmax, ArcFace, and EucMargin, which is the proposed method. Experiments on the MNIST, CIFAR10, and CIFAR100 datasets show that EucMargin has good performance and generalization ability, particularly outstanding on the CIFAR100 dataset. 
 
 
 # Install
+To install the required packages, run the following commands:
 ```
 pip3 install torch torchvision
-
+pip3 install requirements.txt
 ```
 
 # Support Algorithms
 - [x] [L-Softmax](https://arxiv.org/abs/1612.02295)
-- [ ] [SphereFace](https://arxiv.org/abs/1704.08063)
-- [ ] [ArcFace](https://arxiv.org/abs/1801.07698)
-- [ ] [AdaFace](https://arxiv.org/abs/2204.00964)
+- [x] [ArcFace](https://arxiv.org/abs/1801.07698)
+- [x] [EucMargin(Ours)](./docs/EucMargin.md)
 
 # Results
-## MNIST
-|         Method         |  Acc   | Acc(Paper) |
-| :--------------------: | :----: | :--------: |
-|        Softmax         | 99.68% |   99.60%   |
-|     L-Softmax(m=2)     | 99.69% |   99.68%   |
-|     L-Softmax(m=3)     | 99.69% |   99.69%   |
-|     L-Softmax(m=4)     | 99.69% |   99.69%   |
-| ArcFace(m=0.5, s=1.65) | 99.66% |     -      |
+The following table shows the classification error rate achieved by each method on three datasets: MNIST, CIFAR-10, and CIFAR-100.
+
+| Datasets | L-Softmax | ArcFace | EucMargin |
+| :---: | :-------: | :-----: | :----------: |
+| MNIST | 0.31% | 0.31% | **0.28%** |
+| CIFAR-10 | 7.58% | 7.90% | **7.38%** |
+| CIFAR-100 | 29.53% | 30.23% | **28.42%** |
 
 
 # Usage
-1. Download the MNIST dataset and split it into train/val/test/template
-```
-python tools/split_datasets.py -dt MNIST --seed 30673
-```
+To reproduce the results, follow the steps below:
 
-2. Train the model, *seed* is used to reproduce the results, you can change it to get different results.
-2.1 Softmax
-```
-python tools/train.py --c configs/mnist/mnist_digits.yaml -o Global.seed=38667
-```
+1. Download the dataset and split it into train/val/test/template:
 
-2.2 m=2 acc=0.9968
-```
-python tools/train.py --c configs/mnist/mnist_digits_lsoftmax.yaml -o Architecture.Head.margin=2 Global.save_model_dir=output/mnist/mnist_digits_lsoftmax_m2 Global.seed=57554
-```
-
-m=3  acc=0.9969
-```
-python tools/train.py --c configs/mnist/mnist_digits_lsoftmax.yaml -o Architecture.Head.margin=3 Global.save_model_dir=output/mnist/mnist_digits_lsoftmax_m3 Global.seed=83024
-```
-
-m=4  acc=9969
-```
-python tools/train.py --c configs/mnist/mnist_digits_lsoftmax.yaml -o Architecture.Head.margin=4 Global.save_model_dir=output/mnist/mnist_digits_lsoftmax_m4 Global.seed=41403
-```
-
-1. Test the model
-```
-m=1
-python tools/test.py --c configs/mnist/mnist_digits_lsoftmax.yaml -o Global.pretrained_model=output/mnist/mnist_digits_lsoftmax Global.save_model_dir=./output/mnist/mnist_digits_lsoftmax Global.template_mode=0 
-
-m=2
-python tools/test.py --c configs/mnist/mnist_digits_lsoftmax.yaml -o Global.pretrained_model=output/mnist/mnist_digits_lsoftmax_m2/best_accuracy.pth Global.save_model_dir=./output/mnist/mnist_digits_lsoftmax_m2 Global.template_mode=0 
-
-m=3
-python tools/test.py --c configs/mnist/mnist_digits_lsoftmax.yaml -o Global.pretrained_model=output/mnist/mnist_digits_lsoftmax_m3/best_accuracy.pth Global.save_model_dir=./output/mnist/mnist_digits_lsoftmax_m3 Global.template_mode=0 
-
-m=4
-python tools/test.py --c configs/mnist/mnist_digits_lsoftmax.yaml -o Global.pretrained_model=output/mnist/mnist_digits_lsoftmax_m4/best_accuracy.pth Global.save_model_dir=./output/mnist/mnist_digits_lsoftmax_m4 Global.template_mode=0 
-```
-
-### ArcFace
-```
-acc=0.9966
-python tools/train.py --c configs/mnist/mnist_digits_arcface.yaml Global.seed=88567
-
-
-### CIFAR100
-|     Method     |  Acc   | Acc(Paper) |
-| :------------: | :----: | :--------: |
-|    Softmax     | 76.00% |   76.00%   |
-| L-Softmax(m=2) | 76.00% |   76.00%   |
-
-### Usage
-1. Download the CIFAR100 dataset and split it into train/val/test/template
 ```
 python tools/split_datasets.py -dt CIFAR100 --seed 30673
 ```
 
-2. Train the model, *seed* is used to reproduce the results, you can change it to get different results.
-2.1 L-Softmax
-```
-m=4
-python tools/train.py --c configs/cifar100/cifar100_lsoftmax.yaml -o Architecture.Head.margin=4 Global.save_model_dir=output/cifar100/cifar100_lsoftmax_m4 Global.seed=41403
-```
+2. Train the model
 
-2.2 EucMargin
 ```
-margin_add=2.5 acc=0.7158
+# CIFAR-100 EucMargin
 python tools/train.py --c configs/cifar100/cifar100_euc.yaml -o Global.seed=49504
-```
 
+# CIFAR-100 ArcFace
+python tools/train.py --c configs/cifar100/cifar100_arc.yaml
+
+# CIFAR-100 L-Softmax
+python tools/train.py --c configs/cifar100/cifar100_lsoftmax.yaml
 ```
-margin_add=2.5 acc=0.9262
-python tools/train.py --c configs/cifar10/cifar10_euc.yaml -o Global.seed=82165
-```
+Note that L-Softmax is hard to train on CIFAR-100, so you may need to try different hyperparameters to obtain better results.
+
+
+
