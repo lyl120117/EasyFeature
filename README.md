@@ -37,7 +37,7 @@ python tools/split_datasets.py -dt CIFAR100 --seed 30673
 
 ```
 # CIFAR-100 EucMargin
-python tools/train.py --c configs/cifar100/cifar100_euc.yaml -o Global.seed=49504
+python tools/train.py --c configs/cifar100/cifar100_euc.yaml -o Global.seed=49504 Architecture.Head.margin_add=2.5
 
 # CIFAR-100 ArcFace
 python tools/train.py --c configs/cifar100/cifar100_arc.yaml
