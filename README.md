@@ -47,5 +47,5 @@ python tools/train.py --c configs/cifar100/cifar100_lsoftmax.yaml
 ```
 Note that L-Softmax is hard to train on CIFAR-100, so you may need to try different hyperparameters to obtain better results.
 
-
-
+## License
+This project is released under the [Apache 2.0 license](./LICENSE).
